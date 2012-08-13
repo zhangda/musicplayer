@@ -1,4 +1,9 @@
 Musicplayer::Application.routes.draw do
+  
+  match '/songlist/:songs/:links/' => 'songlists#show'
+  
+  root :to => 'songlists#show'
+  
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

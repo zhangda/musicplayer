@@ -31,6 +31,8 @@ group :production do
   gem 'pg'
 end
 
+gem 'nokogiri'
+
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
 

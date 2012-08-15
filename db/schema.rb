@@ -11,6 +11,23 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 0) do
+ActiveRecord::Schema.define(:version => 20120815140251) do
+
+  create_table "links", :force => true do |t|
+    t.string   "url",        :limit => 512
+    t.integer  "song_id"
+    t.datetime "created_at",                :null => false
+    t.datetime "updated_at",                :null => false
+  end
+
+  add_index "links", ["song_id"], :name => "index_links_on_song_id"
+
+  create_table "songs", :force => true do |t|
+    t.string   "name"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "songs", ["name"], :name => "index_songs_on_name"
 
 end

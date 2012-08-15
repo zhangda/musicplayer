@@ -6,34 +6,38 @@ class SonglistsController < ApplicationController
     songs = params[:songs].to_i
     links = params[:links].to_i
     if songs == 0 and links == 0 then
-      songs = 10
-      links = 3
+      songs = 5
+      links = 2
     end
     count = 0
-    arr = []
-    @result = {}
-    playlist = get_playlist(songs)
+    threads = []
+    @new_add = {}
+    playlist = get_playlist(songs,"http://mp3skull.com/latest.html")
     playlist.each do |name, page|
-      arr[count] = Thread.new {
-      	@result[name] = get_songurl('http://mp3skull.com'<< page, links)
+      threads[count] = Thread.new {
+      	@new_add[name] = get_songurl('http://mp3skull.com'<< page, links)
+        save_song(name, @new_add[name])
         count += 1
       }
     end
-    arr.each { |t| t.join }
+    threads.each { |t| t.join }
+    @result = Song.random_pick
     respond_to do |format|
       format.html
-      format.json
+      #format.json
     end
   end
 
   private
-  def get_playlist(songs)
-    doc = Nokogiri::HTML(open('http://mp3skull.com/top.html'))
+  def get_playlist(songs, start_page)
+    doc = Nokogiri::HTML(open(start_page))
     playlist = {}
     doc.css('#content a').each_with_index do |node, i|
-      playlist[node.text] = node['href']
-      #puts node['href']
-      if i >= songs-1  then break end
+      if i >= songs then break end
+      unless Song.has_downloaded?(node.text) then
+        playlist[node.text] = node['href']
+       #puts node['href']
+      end
     end
     playlist
   end
@@ -44,11 +48,25 @@ class SonglistsController < ApplicationController
     doc = Nokogiri::HTML(content)
     download_list = []
     doc.css('a[@style="color:green;"]').each_with_index do |node, i|
+       if i >=links then break end
        download_list << node['href']
        #puts node['href']
-       if i >=links-1 then break end
     end
     download_list
+  end
+
+  def save_song(song_name, song_links)
+    ActiveRecord::Base.transaction do
+      song = Song.new(:name => song_name) 
+      if song.save then
+        song_links.each do |t|
+          song.links.create(:url => t)
+        end
+      else
+         puts song.errors.full_messages
+      end
+    end
+    ActiveRecord::Base.connection.close
   end
 
 end

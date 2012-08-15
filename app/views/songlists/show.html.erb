@@ -1,1 +1,12 @@
-<%= @result %>
+<% @result.each do |r| %>
+   <p> <%= r.name %> </p>
+   <ul>
+      <% r.links.each do |l| %>
+         <li> <%= l.url %> </li>
+      <% end %>
+   </ul>
+<% end %>
+
+<br />
+<br />
+

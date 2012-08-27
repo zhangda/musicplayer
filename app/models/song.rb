@@ -1,5 +1,5 @@
 class Song < ActiveRecord::Base
-  attr_accessible :name
+  attr_accessible :name, :cover
   has_many :links, :dependent => :destroy
  
   def self.has_downloaded?(name)
@@ -17,7 +17,7 @@ class Song < ActiveRecord::Base
   end
 
   def self.random_pick
-     find(:all, :order => "random()", :limit => 5)
+     find(:all, :order => "random()", :limit => 2)
   end
  
 end

@@ -1,5 +1,6 @@
 <% @result.each do |r| %>
    <p> <%= r.name %> </p>
+   <img src="<%= r.cover%>" />
    <ul>
       <% r.links.each do |l| %>
          <li> <%= l.url %> </li>
